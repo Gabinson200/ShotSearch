@@ -5,8 +5,10 @@ from pydantic import BaseModel
 from typing import List, Optional
 import requests
 import json
+from backend import initialize_rag_chain, get_vaccination_info
 
 app = FastAPI()
+rag_chain = initialize_rag_chain()
 
 # Mount static files
 app.mount("/", StaticFiles(directory="build", html=True), name="static")
@@ -36,12 +38,11 @@ def get_vaccination_info(user_input: UserInput):
     try:
         # Simulated response - in production, this would fetch real data
         # For now, returning a sample response
+        info = get_vaccination_info(rag_chain, user_input.specific_questions[0])
         response = {
             "country": user_input.destination_country,
             "required_vaccinations": [
-                "Yellow Fever" if user_input.destination_country.lower() in ["brazil", "peru", "angola"] else None,
-                "Hepatitis A" if user_input.destination_country.lower() not in ["canada", "usa", "uk"] else None,
-                "Typhoid" if user_input.destination_country.lower() not in ["canada", "usa", "uk"] else None
+                info
             ],
             "recommended_vaccinations": [
                 "Influenza" if user_input.age > 65 else None,

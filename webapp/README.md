@@ -25,8 +25,12 @@ npm install
 pip install -r requirements.txt
 ```
 
-2. Start the development server:
+2. Build the frontend:
 ```bash
-npm start
+npm run build
+```
+
+3. Start the development server:
+```bash
 python app.py
 ```
