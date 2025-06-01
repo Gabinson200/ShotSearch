@@ -89,10 +89,10 @@ function App() {
         }}>
           <Box sx={{ mb: 4 }}>
             <Typography variant="h4" component="h1" gutterBottom>
-              Travel Vaccination Guide
+              Shot Search
             </Typography>
             <Typography variant="subtitle1" color="text.secondary" paragraph>
-              Get personalized vaccination recommendations for your destination
+              The ultimate destination to get all your vaccination queries answered
             </Typography>
           </Box>
 
@@ -252,7 +252,7 @@ function App() {
               ) : (
                 <>
                   <InfoIcon sx={{ mr: 1 }} />
-                  Get Vaccination Info
+                  Search
                 </>
               )}
             </Button>
