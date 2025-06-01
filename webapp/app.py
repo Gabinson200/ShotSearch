@@ -10,13 +10,10 @@ from backend import initialize_rag_chain, get_vaccination_info
 app = FastAPI()
 rag_chain = initialize_rag_chain()
 
-# Mount static files
-app.mount("/", StaticFiles(directory="build", html=True), name="static")
-
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,16 +26,21 @@ class UserInput(BaseModel):
     specific_questions: List[str]
     travel_date: str
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to Travel Vaccination Guide API"}
+#@app.get("/")
+#def read_root():
+#    return {"message": "Welcome to Travel Vaccination Guide API"}
 
 @app.post("/vaccination-info")
 def get_vaccination_info(user_input: UserInput):
     try:
-        # Simulated response - in production, this would fetch real data
-        # For now, returning a sample response
+        if not user_input.specific_questions:
+            raise ValueError("No specific questions provided")
+            
+        # Get vaccination info from RAG chain
         info = get_vaccination_info(rag_chain, user_input.specific_questions[0])
+        if info is None:
+            raise ValueError("Failed to get response from RAG chain. Check if OpenAI API key is set and my_document.txt exists.")
+            
         response = {
             "country": user_input.destination_country,
             "required_vaccinations": [
@@ -63,7 +65,12 @@ def get_vaccination_info(user_input: UserInput):
         
         return response
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        error_details = f"Error: {str(e)}\nTraceback: {traceback.format_exc()}"
+        raise HTTPException(status_code=500, detail=error_details)
+
+# Mount static files after API routes
+app.mount("/", StaticFiles(directory="build", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
