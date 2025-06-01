@@ -1,11 +1,15 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Optional
 import requests
 import json
 
 app = FastAPI()
+
+# Mount static files
+app.mount("/", StaticFiles(directory="build", html=True), name="static")
 
 # Configure CORS
 app.add_middleware(
